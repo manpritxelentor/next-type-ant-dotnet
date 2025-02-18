@@ -15,6 +15,16 @@ namespace orderApi
 
             builder.Services.Configure<StaticUserOption>(builder.Configuration.GetSection("StaticUser"));
 
+            builder.Services.AddCors(setupAction =>
+            {
+                setupAction.AddPolicy("AllowedOrgins", policy =>
+                {
+                    policy.WithOrigins(builder.Configuration.GetValue<string>("AllowedOrigin"))
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+            });
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -27,6 +37,7 @@ namespace orderApi
 
             app.UseAuthorization();
 
+            app.UseCors("AllowedOrgins");
 
             app.MapControllers();
 
